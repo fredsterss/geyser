@@ -6,8 +6,24 @@
     GeyserSite.prototype.firebaseRef = 'https://geyser.firebaseio.com';
 
     function GeyserSite() {
-      var f;
+      var f, parser,
+        _this = this;
+      parser = new this.MhtmlParser();
       f = new Firebase("" + this.firebaseRef + "/users/fred/captures/");
+      f.on('value', function(snapshot) {
+        var key, val, _ref, _results;
+        if (snapshot.val() != null) {
+          _ref = snapshot.val();
+          _results = [];
+          for (key in _ref) {
+            val = _ref[key];
+            _results.push(parser.parse(val.file));
+          }
+          return _results;
+        } else {
+          return console.log('#fail');
+        }
+      });
       this.reader = new FileReader();
       console.log('HAI');
     }
