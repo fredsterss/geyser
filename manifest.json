@@ -5,10 +5,9 @@
   "description": "Versioning for noPSD designers.",
   "version": "0.1",
   "browser_action": {
-    "default_icon": "assets/sandwich-128.png"
+    "default_icon": "assets/sandwich-128-normal.png"
   },
   "background": {
-    // "scripts": ["build/geyser.js"]
     "page" :  "geyser.html"
   },
   "permissions": [
