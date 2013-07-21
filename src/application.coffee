@@ -1,8 +1,18 @@
 class @Geyser extends Backbone.View
 
-  initialize: (@options) ->
-    console.log 'hello world!'
-    @render()
+  firebaseRef: 'https://geyser.firebaseio.com/'
 
-  render: ->
-    $('#main').html 'test'
+  initialize: (@options) ->
+    @reader = new FileReader()
+    @reader.onload = (file) =>
+      f = new Firebase(@firebaseRef + 'users/fred/captures/filePayload')
+      f.set file.target.result, =>
+        console.log 'saved to firebase'
+
+    @savePage()
+      
+  savePage: ->
+    chrome.tabs.getSelected null, (tab) =>
+      chrome.pageCapture.saveAsMHTML tabId: tab.id,
+        (mhtml) =>
+          @reader.readAsDataURL(mhtml)

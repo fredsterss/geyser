@@ -11,14 +11,31 @@
       return Geyser.__super__.constructor.apply(this, arguments);
     }
 
+    Geyser.prototype.firebaseRef = 'https://geyser.firebaseio.com/';
+
     Geyser.prototype.initialize = function(options) {
+      var _this = this;
       this.options = options;
-      console.log('hello world!');
-      return this.render();
+      this.reader = new FileReader();
+      this.reader.onload = function(file) {
+        var f;
+        f = new Firebase(_this.firebaseRef + 'users/fred/captures/filePayload');
+        return f.set(file.target.result, function() {
+          return console.log('saved to firebase');
+        });
+      };
+      return this.savePage();
     };
 
-    Geyser.prototype.render = function() {
-      return $('#main').html('test');
+    Geyser.prototype.savePage = function() {
+      var _this = this;
+      return chrome.tabs.getSelected(null, function(tab) {
+        return chrome.pageCapture.saveAsMHTML({
+          tabId: tab.id
+        }, function(mhtml) {
+          return _this.reader.readAsDataURL(mhtml);
+        });
+      });
     };
 
     return Geyser;
