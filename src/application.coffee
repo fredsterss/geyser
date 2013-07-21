@@ -1,0 +1,1 @@
+class @Geyser extends Backbone.View
