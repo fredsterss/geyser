@@ -10,7 +10,7 @@
     Geyser.prototype.savePage = function() {
       var _this = this;
       this.getFile();
-      return chrome.tabs.getSelected(null, function(tab) {
+      return this.getUrl(function(tab) {
         return chrome.pageCapture.saveAsMHTML({
           tabId: tab.id
         }, function(mhtml) {
@@ -27,11 +27,16 @@
         dt = new Date().getTime();
         f = new Firebase("" + _this.firebaseRef + "/users/fred/captures/" + dt);
         _this.setIconState('pending');
-        return f.set(file.target.result, function() {
-          _this.setIconState('success');
-          return setTimeout(function() {
-            return _this.setIconState('normal');
-          }, 10000);
+        return _this.getUrl(function(tab) {
+          return f.set({
+            file: file.target.result,
+            url: tab.url
+          }, function() {
+            _this.setIconState('success');
+            return setTimeout(function() {
+              return _this.setIconState('normal');
+            }, 10000);
+          });
         });
       };
     };
@@ -39,6 +44,16 @@
     Geyser.prototype.setIconState = function(state) {
       return chrome.browserAction.setIcon({
         path: "assets/sandwich-128-" + state + ".png"
+      });
+    };
+
+    Geyser.prototype.getUrl = function(callback) {
+      var _this = this;
+      return chrome.tabs.query({
+        active: true,
+        lastFocusedWindow: true
+      }, function(tabs) {
+        return callback(tabs[0]);
       });
     };
 
