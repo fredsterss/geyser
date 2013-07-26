@@ -6,7 +6,25 @@
     function MhtmlParser() {}
 
     MhtmlParser.prototype.parse = function(file) {
-      return console.log(file);
+      var header, l, line, _i, _len, _ref;
+      file = file.slice(13);
+      file = atob(file);
+      header = {};
+      header.end = file.indexOf('"', file.indexOf('NextPart'));
+      header.raw = file.slice(0, header.end + 3);
+      _ref = header.raw.split('\n');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        line = _ref[_i];
+        if (line.indexOf(':') !== -1) {
+          l = line.split(': ');
+          header[l[0]] = l[1];
+        } else if (line.indexOf('="') !== -1) {
+          l = line.split('="');
+          header[l[0]] = l[1].substring(0, l[1].length - 3);
+        }
+      }
+      console.log(header);
+      return file;
     };
 
     return MhtmlParser;
